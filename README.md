@@ -1,0 +1,114 @@
+<h1 align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/imagescript/ImageScript/master/media/wordmark-tagline-dark.svg">
+    <img alt="ImageScript: Pure TypeScript image processing that runs everywhere" src="https://raw.githubusercontent.com/imagescript/ImageScript/master/media/wordmark-tagline.svg" width="640">
+  </picture>
+</h1>
+
+[![Documentation](https://img.shields.io/badge/Documentation-informational?style=for-the-badge&logo=data:image/svg%2bxml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIiB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgcm9sZT0iaW1nIiBhcmlhLWxhYmVsPSJJbWFnZVNjcmlwdCI+PHRpdGxlPkltYWdlU2NyaXB0PC90aXRsZT48cGF0aCBkPSJNMTMyIDk2aC0xNGEzNCAzNCAwIDAgMC0zNCAzNHY3NGEzMCAzMCAwIDAgMS0zMCAzMGgtNnY0NGg2YTMwIDMwIDAgMCAxIDMwIDMwdjc0YTM0IDM0IDAgMCAwIDM0IDM0aDE0IE0zODAgOTZoMTRhMzQgMzQgMCAwIDEgMzQgMzR2NzRhMzAgMzAgMCAwIDAgMzAgMzBoNnY0NGgtNmEzMCAzMCAwIDAgMC0zMCAzMHY3NGEzNCAzNCAwIDAgMS0zNCAzNGgtMTQiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLXdpZHRoPSIzMCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PHJlY3QgeD0iMTY0IiB5PSIxNjQiIHdpZHRoPSI1NiIgaGVpZ2h0PSI1NiIgcng9IjEwIiBmaWxsPSIjZmZmIi8+PHJlY3QgeD0iMjI4IiB5PSIxNjQiIHdpZHRoPSI1NiIgaGVpZ2h0PSI1NiIgcng9IjEwIiBmaWxsPSIjZmZmIi8+PHJlY3QgeD0iMjkyIiB5PSIxNjQiIHdpZHRoPSI1NiIgaGVpZ2h0PSI1NiIgcng9IjEwIiBmaWxsPSIjZmZmIi8+PHJlY3QgeD0iMTY0IiB5PSIyMjgiIHdpZHRoPSI1NiIgaGVpZ2h0PSI1NiIgcng9IjEwIiBmaWxsPSIjZmZmIi8+PHJlY3QgeD0iMjI4IiB5PSIyMjgiIHdpZHRoPSI1NiIgaGVpZ2h0PSI1NiIgcng9IjEwIiBmaWxsPSIjZmZmIi8+PHJlY3QgeD0iMjkyIiB5PSIyMjgiIHdpZHRoPSI1NiIgaGVpZ2h0PSI1NiIgcng9IjEwIiBmaWxsPSIjZmZmIi8+PHJlY3QgeD0iMTY0IiB5PSIyOTIiIHdpZHRoPSI1NiIgaGVpZ2h0PSI1NiIgcng9IjEwIiBmaWxsPSIjZmZmIi8+PHJlY3QgeD0iMjI4IiB5PSIyOTIiIHdpZHRoPSI1NiIgaGVpZ2h0PSI1NiIgcng9IjEwIiBmaWxsPSIjZmZmIi8+PHJlY3QgeD0iMjkyIiB5PSIyOTIiIHdpZHRoPSI1NiIgaGVpZ2h0PSI1NiIgcng9IjEwIiBmaWxsPSIjZmZmIi8+PC9zdmc+Cg==)](https://imagescript.dev/)
+[![Playground](https://img.shields.io/badge/Playground-Try%20it%20live-ff2d75?style=for-the-badge&labelColor=ff7a18&logoColor=white&logo=data%3Aimage%2Fsvg%2Bxml%3Bbase64%2CPHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAyNCAyNCc%2BPHBhdGggZmlsbD0nd2hpdGUnIGQ9J003IDQuNXYxNWwxMi41LTcuNXonLz48L3N2Zz4%3D)](https://try.imagescript.dev/)
+
+[![Github](https://img.shields.io/badge/Github-Repository-181717?logo=github&style=for-the-badge)](https://github.com/imagescript/ImageScript)
+[![Discord Server](https://img.shields.io/discord/691713541262147687.svg?label=Discord&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2&style=for-the-badge)](https://discord.gg/8hPrwAH)
+
+---
+
+**ImageScript** decodes, edits and encodes images in pure TypeScript: no WebAssembly, no native binaries, no
+dependencies. It runs in Node.js 22.13+, Deno, Bun, browsers and edge runtimes (Cloudflare Workers, Vercel's Edge
+Runtime, Deno Deploy), works with both `import` and `require()`, and ships with type definitions. Large images are
+encoded and decoded on several threads wherever the runtime supports workers.
+
+```sh
+npm install imagescript              # Node.js, Bun and bundlers
+deno add jsr:@matmen/imagescript     # Deno
+```
+
+Without a bundler, import it from jsDelivr in the browser:
+
+```html
+<script type="module">
+  import { Image } from 'https://cdn.jsdelivr.net/npm/imagescript@3/+esm';
+
+  const image = await Image.decode(await fetch('photo.jpg').then(r => r.arrayBuffer()));
+  image.resize({ width: 256 });
+  const url = URL.createObjectURL(new Blob([await image.encodePNG()], { type: 'image/png' }));
+  document.body.append(Object.assign(document.createElement('img'), { src: url }));
+</script>
+```
+
+---
+
+### Example
+
+```js
+import { Image } from 'imagescript';
+import { readFile, writeFile } from 'node:fs/promises';
+
+const image = await Image.decode(await readFile('input.jpg'));
+image.resize({ width: 256 }).roundCorners(16);
+await writeFile('output.png', await image.encodePNG());
+```
+
+<p align="center">
+  <a href="https://try.imagescript.dev/">
+    <img src="https://github.com/imagescript/ImageScript/raw/master/media/playground-cta.svg" alt="Try ImageScript in the Playground" width="440">
+  </a>
+</p>
+
+[![Example](https://github.com/imagescript/ImageScript/raw/master/tests/targets/readme.png)](https://github.com/imagescript/ImageScript/blob/master/tests/readme.js)
+
+---
+
+### Features
+
+| Format | Decode | Encode |
+|---|---|---|
+| PNG | ✓ | ✓ |
+| JPEG | ✓ | ✓ |
+| WebP | ✓ | ✓ (lossless and lossy) |
+| AVIF | ✓ | ✓ (lossless and lossy) |
+| JPEG XL | ✓ | ✓ (lossless and lossy) |
+| GIF, APNG (animations) | ✓ | ✓ |
+| BMP, QOI, TGA, Netpbm | ✓ | ✓ |
+| TIFF, ICO/CUR, Radiance HDR | ✓ | |
+| [HDR gain maps](https://imagescript.dev/classes/GainMap.html) (Ultra HDR and iPhone JPEGs, AVIF, JPEG XL) | ✓ | ✓, kept through edits |
+
+[Animations](https://imagescript.dev/classes/Animation.html) can be decoded from GIF, APNG, WebP and JPEG XL,
+and encoded as GIF, APNG or WebP, all at once or
+[frame by frame](https://imagescript.dev/classes/Animation.html#webpencoder). Embedded color profiles (Display
+P3, Adobe RGB, ...) are converted to sRGB when decoding, so images look the way browsers show them.
+
+- [Text rendering](https://imagescript.dev/classes/Image.html#rendertext) with TrueType, OpenType and WOFF fonts:
+  all scripts, color emoji, variable fonts
+- [SVG rendering](https://imagescript.dev/classes/Image.html#rendersvg), including text (with fonts you pass
+  or fonts embedded in the SVG)
+- [Resizing](https://imagescript.dev/classes/Image.html#resize),
+  [cropping](https://imagescript.dev/classes/Image.html#crop),
+  [rotating](https://imagescript.dev/classes/Image.html#rotate),
+  [trimming](https://imagescript.dev/classes/Image.html#trim),
+  [rounded corners](https://imagescript.dev/classes/Image.html#roundcorners), ...
+- [Compositing](https://imagescript.dev/classes/Image.html#composite) with opacity and blend modes
+- Filters and color adjustments: [blur](https://imagescript.dev/classes/Image.html#blur),
+  [sharpen](https://imagescript.dev/classes/Image.html#sharpen),
+  [brightness](https://imagescript.dev/classes/Image.html#brightness),
+  [hueShift](https://imagescript.dev/classes/Image.html#hueshift), ...
+
+The [documentation](https://imagescript.dev/) covers the full API. When upgrading from an older major version,
+see the [changelog](https://github.com/imagescript/ImageScript/blob/master/CHANGELOG.md). [bench/](bench/README.md)
+compares ImageScript's speed and file sizes with Jimp, sharp and other libraries.
+
+---
+
+### Credits
+
+ImageScript builds on [fflate](https://github.com/101arrowz/fflate), libjpeg, [pdf.js](https://github.com/mozilla/pdf.js),
+[font-rs](https://github.com/raphlinus/font-rs), [libwebp](https://chromium.googlesource.com/webm/libwebp),
+[HarfBuzz](https://github.com/harfbuzz/harfbuzz), [dav1d](https://code.videolan.org/videolan/dav1d),
+[libavif](https://github.com/AOMediaCodec/libavif), libaom, [jxl-oxide](https://github.com/tirr-c/jxl-oxide) and
+[libjxl](https://github.com/libjxl/libjxl). The TrueType hinting follows [FreeType](https://freetype.org): portions of
+this software are copyright © 2026 The FreeType Project (www.freetype.org). All rights reserved. See
+[THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for the licenses.
+
+---
+
+Questions? Join the [Discord server](https://discord.gg/8hPrwAH).

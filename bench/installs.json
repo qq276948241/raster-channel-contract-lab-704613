@@ -1,0 +1,42 @@
+{
+  "ImageScript": {
+    "package": "imagescript@3.20.5",
+    "bytes": 2558857,
+    "packages": 1
+  },
+  "Jimp": {
+    "package": "jimp@1.6.1",
+    "bytes": 26777389,
+    "packages": 64
+  },
+  "image-js": {
+    "package": "image-js@1.7.1",
+    "bytes": 47860720,
+    "packages": 55
+  },
+  "PureJsImage": {
+    "package": "purejsimage@0.17.0",
+    "bytes": 6658152,
+    "packages": 1
+  },
+  "Photon": {
+    "package": "@silvia-odwyer/photon-node@0.3.4",
+    "bytes": 2266121,
+    "packages": 1
+  },
+  "sharp": {
+    "package": "sharp@0.35.5",
+    "bytes": 20323080,
+    "packages": 6
+  },
+  "jsquash": {
+    "package": "@jsquash/avif@2.1.1 @jsquash/jxl@1.3.0",
+    "bytes": 14245815,
+    "packages": 3
+  },
+  "@napi-rs/canvas": {
+    "package": "@napi-rs/canvas@1.0.11",
+    "bytes": 34977407,
+    "packages": 2
+  }
+}

@@ -1,0 +1,55 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "entryPoints": [
+    "src/index.ts"
+  ],
+  "out": "docs",
+  "name": "ImageScript",
+  "readme": "README.md",
+  "favicon": "media/favicon.svg",
+  "customCss": "media/docs.css",
+  "includeVersion": true,
+  "excludePrivate": true,
+  "excludeInternal": true,
+  "sort": [
+    "kind",
+    "alphabetical"
+  ],
+  "navigation": {
+    "includeGroups": true
+  },
+  "groupOrder": [
+    "Classes",
+    "Functions",
+    "Interfaces",
+    "Type Aliases",
+    "Constructors",
+    "Properties",
+    "Accessors",
+    "Methods",
+    "*",
+    "Deprecated"
+  ],
+  "visibilityFilters": {
+    "protected": false,
+    "private": false,
+    "inherited": false,
+    "external": false
+  },
+  "lightHighlightTheme": "github-light-default",
+  "darkHighlightTheme": "github-dark-default",
+  "githubPages": true,
+  "hostedBaseUrl": "https://imagescript.dev/",
+  "gitRevision": "master",
+  "navigationLinks": {
+    "GitHub": "https://github.com/imagescript/ImageScript",
+    "Changelog": "https://github.com/imagescript/ImageScript/blob/master/CHANGELOG.md",
+    "Discord": "https://discord.gg/8hPrwAH"
+  },
+  "validation": {
+    "notExported": true,
+    "invalidLink": true,
+    "notDocumented": true
+  },
+  "excludeExternals": true
+}

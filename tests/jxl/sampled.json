@@ -1,0 +1,17 @@
+{
+    "alpha-nonpremultiplied": {
+        "step": 4
+    },
+    "alpha-premultiplied": {
+        "step": 8
+    },
+    "animation-spline": {
+        "step": 4
+    },
+    "blendmodes": {
+        "step": 8
+    },
+    "mul-no-extra-channels": {
+        "step": 1
+    }
+}

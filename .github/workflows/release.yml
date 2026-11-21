@@ -1,0 +1,154 @@
+name: release
+
+# publishing a GitHub release with the tag v<version> publishes that version to npm and JSR. The tag is the version:
+# the release is checked (semver, changelog, not yet on npm/JSR), tested on every supported platform, published with
+# the tag's version to npm (with provenance, through trusted publishing) and JSR (through GitHub OIDC, no tokens),
+# then the docs are deployed and, for regular releases, the version is committed to the default branch, the playground
+# is updated to it and the benchmark in bench/ is run against the release
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.check.outputs.version }}
+      dist-tag: ${{ steps.check.outputs.dist-tag }}
+    steps:
+    - uses: actions/checkout@v7
+    - uses: actions/setup-node@v7
+      with:
+        node-version: 24.x
+
+    - id: check
+      run: node scripts/release-check.js "$TAG" "$PRERELEASE"
+      env:
+        TAG: ${{ github.event.release.tag_name }}
+        PRERELEASE: ${{ github.event.release.prerelease }}
+
+  test:
+    needs: check
+    uses: ./.github/workflows/node.yml
+
+  publish:
+    needs: [check, test]
+    runs-on: ubuntu-latest
+    environment:
+      name: npm
+      url: https://www.npmjs.com/package/imagescript?activeTab=versions
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+    - uses: actions/checkout@v7
+    - uses: actions/setup-node@v7
+      with:
+        node-version: 24.x
+        registry-url: https://registry.npmjs.org
+
+    - run: npm install
+    - run: node scripts/version.js "$VERSION"
+      env:
+        VERSION: ${{ needs.check.outputs.version }}
+    # prepack builds dist; trusted publishing needs npm 11.5.1 or newer, which node 24 ships
+    - run: npm publish --provenance --access public --tag "$DIST_TAG"
+      env:
+        DIST_TAG: ${{ needs.check.outputs.dist-tag }}
+
+  jsr:
+    needs: [check, publish]
+    permissions:
+      contents: read
+      id-token: write
+    uses: ./.github/workflows/jsr.yml
+    with:
+      version: ${{ needs.check.outputs.version }}
+
+  docs:
+    needs: [check, publish]
+    if: needs.check.outputs.dist-tag == 'latest'
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    uses: ./.github/workflows/docs.yml
+    with:
+      version: ${{ needs.check.outputs.version }}
+
+  # posts the notes of regular releases to Discord once npm and JSR have them (the DISCORD_WEBHOOK secret: a channel's
+  # webhook URL; without it nothing is posted)
+  announce:
+    needs: [check, publish, jsr]
+    if: needs.check.outputs.dist-tag == 'latest'
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v7
+    - uses: actions/setup-node@v7
+      with:
+        node-version: 24.x
+    - run: node scripts/discord.js
+      env:
+        WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        NAME: ${{ github.event.release.name }}
+        VERSION: ${{ needs.check.outputs.version }}
+        URL: ${{ github.event.release.html_url }}
+        BODY: ${{ github.event.release.body }}
+
+  # regular releases commit their version to the default branch (on top of what was merged since the tag), so
+  # package.json there shows the latest release; prereleases and fixes for older majors leave it alone
+  # (once npm has the release: a failing JSR publish can be repeated by hand, see jsr.yml)
+  version:
+    needs: [check, publish]
+    if: needs.check.outputs.dist-tag == 'latest'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+    - uses: actions/checkout@v7
+      with:
+        ref: ${{ github.event.repository.default_branch }}
+    - uses: actions/setup-node@v7
+      with:
+        node-version: 24.x
+    - run: node scripts/version.js "$VERSION"
+      env:
+        VERSION: ${{ needs.check.outputs.version }}
+    # pushes with GITHUB_TOKEN don't trigger other workflows
+    - run: |
+        if git diff --quiet; then echo "the default branch already has version $VERSION"; exit 0; fi
+        git config user.name "github-actions[bot]"
+        git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        git commit -am "release $VERSION"
+        git push
+      env:
+        VERSION: ${{ needs.check.outputs.version }}
+
+  # updates the playground (try.imagescript.dev) to regular releases, see playground.yml
+  playground:
+    needs: [check, publish]
+    if: needs.check.outputs.dist-tag == 'latest'
+    permissions: {}
+    uses: ./.github/workflows/playground.yml
+    with:
+      version: ${{ needs.check.outputs.version }}
+    secrets:
+      PLAYGROUND_DEPLOY_KEY: ${{ secrets.PLAYGROUND_DEPLOY_KEY }}
+
+  # measures the release against the other libraries and commits the results to bench/ on the default branch (after
+  # the version commit, so the two don't race)
+  bench:
+    needs: [check, version]
+    if: needs.check.outputs.dist-tag == 'latest'
+    permissions:
+      contents: write
+    uses: ./.github/workflows/bench.yml
+    with:
+      version: ${{ needs.check.outputs.version }}
