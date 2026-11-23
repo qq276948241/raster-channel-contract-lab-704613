@@ -99,6 +99,34 @@ compares ImageScript's speed and file sizes with Jimp, sharp and other libraries
 
 ---
 
+### Node.js, startup and memory
+
+- **Node.js 22.13 or later** is required (`engines` in package.json). The package is ES modules; CommonJS
+  consumers load it through `require()` of ES modules, available since Node 22.12. There is nothing to compile
+  and no postinstall step: startup is importing plain JavaScript, and worker threads are only spawned when an
+  operation actually uses them.
+- **Memory budget:** decoding rejects images whose pixels exceed `maxPixels` (default 16383², like sharp's
+  `limitInputPixels`) before allocating for them, so small malicious files can't exhaust memory. The lossless
+  raster module (`src/lossless`, 8/16-bit Netpbm and TIFF-like tiles) applies its own byte limit
+  (`MAX_RASTER_BYTES`, 1 GiB) and checks dimensions, multiplication overflow, truncation and trailing data before
+  any buffer is allocated; errors name the field and offset. File encoding streams to a temporary file in 64 KiB
+  chunks and removes it on failure.
+- **Threads and cancellation:** large encodes run on `worker_threads` where available. The lossless operators
+  (`RasterPool`) split rasters into row tiles across workers, report monotonic progress, and accept an
+  `AbortSignal`: an aborted task rejects with an `AbortError` and publishes no further results, and the pool's
+  workers stay reusable. Idle workers are unref'd and don't keep the process alive.
+
+### Lossless 8/16-bit rasters
+
+The main `Image` API is 8-bit RGBA. For pipelines that must not lose precision, `src/lossless` (not part of the
+browser bundle's public entry) provides a strict lossless path: Netpbm (P5/P6/P7) and TIFF-like tiled reading
+that keeps 16-bit samples as `Uint16Array` without quantizing them, streaming Netpbm file encoding, and pure
+operators — linear/sRGB conversion, premultiplied-alpha round trips, greyscale histograms and percentiles,
+bilinear scaling and exact 90° rotation — that never mutate their input and round floats with one fixed rule
+(`Math.round`, halves toward positive infinity).
+
+---
+
 ### Credits
 
 ImageScript builds on [fflate](https://github.com/101arrowz/fflate), libjpeg, [pdf.js](https://github.com/mozilla/pdf.js),
